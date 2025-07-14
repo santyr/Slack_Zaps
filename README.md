@@ -2,9 +2,6 @@
 
 Slack Zaps: Nostr Zaps for the Slack Workspace
 
-![alt text](https://img.shields.io/badge/build-passing-brightgreen)
-
-
 ![alt text](https://img.shields.io/badge/license-MIT-blue)
 
 A powerful, deeply integrated Slack application that allows users to send and receive instant, fee-less Bitcoin Lightning "zaps" as a form of appreciation and reward.
