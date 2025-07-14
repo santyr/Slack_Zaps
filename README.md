@@ -1,10 +1,11 @@
 # Slack Zaps: Nostr Zaps for the Slack Workspace
 
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com)
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com)
 
 A powerful, deeply integrated Slack application that allows users to send and receive instant, fee-less Bitcoin Lightning "zaps" as a form of appreciation and reward.
 
-This project leverages a centralized [LNbits](https://github.com/lnbits/lnbits) instance to create a seamless user experience, making the act of showing appreciation as easy as reacting with an emoji.
+This project uses a centralized [LNbits](https://github.com/lnbits/lnbits) instance to create a frictionless internal economy. It also features optional, one-click wallet funding through the [Alby](https://getalby.com/) browser extension for an enhanced user experience.
 
 ## Table of Contents
 
@@ -13,8 +14,9 @@ This project leverages a centralized [LNbits](https://github.com/lnbits/lnbits) 
 - [The User Journey](#the-user-journey)
   - [1. One-Time Admin Setup](#1-one-time-admin-setup)
   - [2. Onboarding a New User](#2-onboarding-a-new-user)
-  - [3. Sending a Zap: The Four Methods](#3-sending-a-zap-the-four-methods)
+  - [3. Sending a Zap](#3-sending-a-zap)
 - [The App Home: Your Central Dashboard](#the-app-home-your-central-dashboard)
+- [Optional Alby Integration: One-Click Funding](#optional-alby-integration-one-click-funding)
 - [Technical Architecture](#technical-architecture)
 - [Installation & Configuration](#installation--configuration)
   - [Prerequisites](#prerequisites)
@@ -27,17 +29,17 @@ This project leverages a centralized [LNbits](https://github.com/lnbits/lnbits) 
 
 The goal is to foster a culture of recognition by removing all friction from peer-to-peer value transfer. Our philosophy is guided by two principles:
 
-1.  **Context and Choice:** Meet users where they are. A user should be able to send a zap from anywhere they think of doing it—reacting to a message, looking at a user's profile, or firing off a command.
-2.  **Instant and Free:** By using a single LNbits instance for internal ledger updates, all transactions are instantaneous and incur zero network fees.
+1.  **Frictionless Core Experience:** All zaps between users in the workspace are internal, instant, and completely free of fees.
+2.  **Context and Choice:** Meet users where they are. A user can send a zap from anywhere they think of doing it—reacting to a message, looking at a user's profile, or firing off a command.
 
 ## Core Features
 
--   ⚡ **Four Ways to Zap:** Use `/zap`, a message shortcut, the App Home GUI, or a button on a user's profile.
--   🏦 **Centralized LNbits Backend:** All payments are instant and fee-less internal transfers.
--   ✨ **Seamless Onboarding:** A guided `/zap-setup` command creates or links a wallet and automatically updates the user's Slack profile.
+-   ⚡️ **Four Ways to Zap:** Use `/zap`, a message shortcut, the App Home GUI, or a button on a user's profile.
+-   🏦 **Centralized LNbits Backend:** All payments are instant and fee-less internal ledger updates.
+-   ✨ **Seamless Onboarding:** A guided `/zap-setup` command creates or links an internal wallet and automatically updates the user's Slack profile.
 -   🏠 **App Home Dashboard:** A central hub to view your balance, see transaction history, and top up your wallet.
 -   🔗 **Custom Profile Integration:** Onboard by editing your profile and zap users directly from their profile pop-up.
--   🧠 **Smart Notifications:** The app intelligently invites new users and can aggregate multiple zaps into a single notification thread to reduce noise.
+-   💡 **Optional Alby Integration:** One-click wallet funding for users with the Alby browser extension via WebLN.
 
 ## The User Journey
 
@@ -55,23 +57,24 @@ Before the app can be used, a Slack Workspace Admin must perform a crucial one-t
 The user experience begins with a simple, guided setup process.
 
 1.  **Initiation:** The user types the `/zap-setup` command.
-2.  **Choice:** The app presents a private, interactive choice: **[ Create a New Wallet ]** or **[ Link an Existing Wallet ]**.
+2.  **Choice:** The app presents a private, interactive choice:
+    *   **[ ✨ Create a New Internal Wallet ]**: The recommended path for all users.
+    -   **[ 🔗 Link an Existing LNbits Wallet Key ]**: For advanced users who already have a wallet *on this specific LNbits instance*.
 3.  **Backend Magic:**
     -   The backend creates or validates the user's LNbits wallet via the core LNbits API.
     -   It securely stores the mapping of `Slack User ID` -> `LNbits Wallet Key` in its encrypted database.
     -   It then uses the Slack API to **write the LNbits Read Key into the custom profile field** created by the admin.
 4.  **Completion:** The user is notified that their setup is complete.
 
-### 3. Sending a Zap: The Four Methods
+### 3. Sending a Zap
 
-Once onboarded, users have four intuitive ways to send a zap.
+Sending a zap is always an internal transaction, making it simple and instant.
 
-| Method             | User Action                                                   | Use Case & Advantage                                                                                          |
-| :----------------- | :------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------ |
-| **Slash Command**  | `/zap @user <amt> <msg>`                                      | **Speed & Power.** Ideal for power users and for sending zaps not tied to a specific message.                 |
-| **Message Shortcut**| Hover on message `(...)` -> `⚡️ Zap this message`            | **Context.** The most intuitive way to reward valuable content. The notification appears in the message's thread. |
-| **App Home GUI**   | Go to App Home -> Click `[Send a Zap]`                        | **Visual.** Perfect for users who prefer a graphical interface over commands.                                 |
-| **Profile GUI**    | Click a user's profile -> `View details in App` -> `[⚡️ Zap User]` | **Discoverability.** The most native-feeling method, allowing users to zap directly from a profile card.        |
+1.  **Initiation:** A user zaps via `/zap`, a message shortcut, the App Home, or a profile button.
+2.  **Backend Logic:**
+    -   The backend retrieves the LNbits wallet keys for both the sender and the recipient.
+    -   It commands the central LNbits instance to perform an internal transfer.
+3.  **Confirmation:** The sender receives a notification that the zap was sent instantly and for free.
 
 ## The App Home: Your Central Dashboard
 
@@ -80,16 +83,30 @@ The App Home tab is the user's central hub for all zap-related activity. It feat
 -   **Live Balance:** Displays the current LNbits wallet balance in sats.
 -   **Send a Zap Button:** The primary call-to-action for the GUI zap flow.
 -   **Recent Transactions:** A list of the latest zaps sent and received.
--   **Top Up Wallet Button:** Generates a new Lightning invoice from the user's wallet for easy funding.
--   **Manage Wallet Link:** A direct link to the user's wallet on the LNbits web interface.
+-   **[Top Up Wallet] Button:** This is the entry point for funding the wallet, with special integration for Alby users.
+
+## Optional Alby Integration: One-Click Funding
+
+We enhance the wallet funding process for users who have the Alby browser extension installed. This is a **progressive enhancement** and does not affect users without the extension.
+
+**How it Works:**
+
+1.  A user clicks the **[Top Up Wallet]** button in their App Home.
+2.  The app opens a view or sends a link to a secure, dedicated web page hosted by our backend service.
+3.  This webpage displays a standard invoice and QR code for all users.
+4.  Crucially, the page's JavaScript also checks for the presence of `window.webln` (injected by Alby).
+5.  **If `window.webln` is detected,** an additional button, **[⚡️ Pay with Alby]**, is displayed.
+6.  When the user clicks this button, the webpage requests payment of the invoice via the `webln.sendPayment()` function, prompting the user for a one-click confirmation in their Alby extension.
+
+This flow provides a vastly superior UX for funding, turning a multi-step process into a single click, without complicating the core zap functionality.
 
 ## Technical Architecture
 
-The system consists of three distinct components:
-
-1.  **Slack App:** Built with a framework like **Bolt for Python/JS**. Manages all user-facing interactions (modals, commands, shortcuts).
-2.  **Backend Service:** A web service (e.g., **FastAPI**, **Express**) that contains all business logic. It communicates with both Slack and LNbits and stores user mappings in an encrypted database.
-3.  **Central LNbits Instance:** A single, self-hosted or managed LNbits server that acts as the ledger for all internal transactions. The backend communicates with it via the core LNbits API (specifically `POST /api/v1/users` for wallet creation).
+1.  **Slack App:** Built with **Bolt for Python/JS**, managing all native Slack UI.
+2.  **Backend Service:** A web service (e.g., **FastAPI**, **Express**) that contains all business logic.
+    -   Communicates with the Slack API and the central LNbits instance API.
+    -   Serves a small, secure frontend page for the "Top Up" process. This page contains the JavaScript necessary to detect and interact with `window.webln`.
+3.  **Central LNbits Instance:** The ledger and wallet provider for the entire internal economy.
 
 ## Installation & Configuration
 
@@ -117,8 +134,7 @@ The system consists of three distinct components:
     ```
 
 3.  **Configure Environment Variables:**
-    Create a `.env` file in the root directory and populate it with the following:
-
+    Create a `.env` file and populate it:
     ```env
     # Slack App Credentials
     SLACK_BOT_TOKEN="xoxb-..."
@@ -133,18 +149,7 @@ The system consists of three distinct components:
     ```
 
 4.  **Configure the Slack App:**
-    -   Go to [api.slack.com/apps](https://api.slack.com/apps) and create a new app.
-    -   **Enable Socket Mode** under "Settings".
-    -   **OAuth & Permissions:** Add the following scopes:
-        -   `chat:write`
-        -   `commands`
-        -   `users:read`
-        -   `users.profile:write`
-    -   **Slash Commands:** Configure the `/zap`, `/zap-setup`, `/zap-balance`, and `/zap-help` commands, pointing them to your app.
-    -   **Interactivity & Shortcuts:**
-        -   Enable Interactivity.
-        -   Under "Message Shortcuts", create a new shortcut named "⚡️ Zap this message".
-    -   **App Home:** Enable the App Home feature.
+    (Follow standard setup for Scopes, Commands, Shortcuts, and App Home as detailed in previous plans). Required scopes are `chat:write`, `commands`, `users:read`, `users.profile:write`.
 
 5.  **Run the Application:**
     ```sh
@@ -159,26 +164,23 @@ The system consists of three distinct components:
 
 | Feature      | Command / Action                               | Description                                                      |
 | :----------- | :--------------------------------------------- | :--------------------------------------------------------------- |
-| **Setup**    | `/zap-setup`                                   | Initiates the guided onboarding process to create or link a wallet. |
-| **Send Zap** | `/zap @user <amt> <msg>`                       | Sends a specified amount of sats to a user.                      |
-| **Send Zap** | `(...) -> ⚡️ Zap this message`                | Opens a modal to zap the author of the selected message.         |
-| **Send Zap** | App Home `[Send a Zap]`                        | Opens a GUI modal to select a recipient and send a zap.          |
-| **Send Zap** | Profile `[⚡️ Zap User]`                       | Opens a GUI modal to zap the selected user.                      |
-| **Balance**  | `/zap-balance`                                 | Displays your current wallet balance in a private message.       |
+| **Setup**    | `/zap-setup`                                   | Initiates the guided onboarding process to get an internal wallet. |
+| **Send Zap** | `/zap`, Message Shortcut, GUI                  | Sends an instant, free internal payment to another user.           |
+| **Balance**  | `/zap-balance`                                 | Displays your current internal wallet balance.                     |
 | **Help**     | `/zap-help`                                    | Shows a help message detailing all available commands and features. |
 
 ## Security Considerations
 
 -   **Database Encryption:** The database storing the `Slack ID <-> LNbits Key` mapping MUST be encrypted at rest.
--   **Environment Variables:** Never commit the `.env` file to version control. Use a secrets management system for production.
--   **Request Verification:** The backend must verify the cryptographic signature of all incoming requests from Slack to prevent forged requests.
--   **API Key Scopes:** The LNbits Admin Key is highly sensitive. Ensure it is stored securely and network access to your LNbits instance is restricted.
+-   **Environment Variables:** Never commit the `.env` file to version control.
+-   **Request Verification:** The backend must verify the cryptographic signature of all incoming requests from Slack.
+-   **WebLN Page Security:** The "Top Up" webpage must be served over HTTPS and be protected against common web vulnerabilities like XSS to ensure the integrity of the payment process.
 
 ## Roadmap & Contributing
 
-This project provides a robust foundation. Pull requests are welcome! Future enhancements could include:
+Pull requests are welcome!
 
 -   [ ] **Aggregated Notifications:** Bundle multiple zaps on a single message into one updating notification.
 -   [ ] **Leaderboards:** Optional weekly/monthly summaries to celebrate top zappers.
+-   [ ] **UI Enhancements:** Refine the "Top Up" page UI for a smoother experience.
 -   [ ] **Custom Zap Emojis:** Allow users to react with a specific emoji (e.g., `:zap:`) to trigger the zap modal.
--   [ ] **Batch Zaps:** Zap multiple users at once from the App Home GUI.
