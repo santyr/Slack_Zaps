@@ -1,6 +1,5 @@
 # Slack Zaps: Nostr Zaps for the Slack Workspace
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com)
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com)
 
 A powerful, deeply integrated Slack application that allows users to send and receive Bitcoin Lightning "zaps". This app functions as a hybrid system, supporting both a zero-fee internal economy and interoperability with the global Lightning Network via Lightning Addresses, all while adhering to the spirit of Nostr's design patterns.
